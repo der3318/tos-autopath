@@ -1,0 +1,6 @@
+startRowIdx=2
+startColIdx=0
+Move.DOWN Move.DOWN Move.RIGHT Move.RIGHT Move.UP Move.RIGHT Move.RIGHT Move.RIGHT Move.UP Move.LEFT Move.LEFT Move.LEFT Move.UP Move.LEFT Move.DOWN Move.RIGHT Move.UP Move.RIGHT Move.UP Move.RIGHT Move.DOWN Move.LEFT Move.UP Move.RIGHT Move.DOWN Move.RIGHT Move.UP Move.LEFT Move.DOWN Move.DOWN Move.LEFT Move.DOWN Move.RIGHT Move.DOWN Move.LEFT Move.UP Move.UP Move.RIGHT Move.UP Move.RIGHT Move.DOWN Move.DOWN Move.DOWN Move.LEFT 
+stones=26
+combo=8
+steps=44
