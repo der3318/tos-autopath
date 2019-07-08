@@ -1,8 +1,9 @@
 import sys
 import copy
 import queue
-from PIL import Image, ImageDraw
 import os
+import shutil
+from PIL import Image, ImageDraw
 from basic import StoneType
 import config as cfg
 
@@ -71,13 +72,8 @@ def analyze(_initBoard):
     # return final result
     return bestBoard, finalMoveList
 
-def visualizePath(_initBoard, _bestBoard, _finalMoveList):
-    # create directory
-    if not os.path.exists(cfg.outputDir):
-        os.makedirs(cfg.outputDir)
-    # setup image objecdts
-    hand = Image.open(cfg.imagePath["hand"]).convert("RGBA")
-    flag = Image.open(cfg.imagePath["flag"]).convert("RGBA")
+def drawBoard(_board):
+    pixels = cfg.settings["pixels"]
     type2Foreground = {
         StoneType.DARK: Image.open(cfg.imagePath["dark"]).convert("RGBA"),
         StoneType.LIGHT: Image.open(cfg.imagePath["light"]).convert("RGBA"),
@@ -86,54 +82,54 @@ def visualizePath(_initBoard, _bestBoard, _finalMoveList):
         StoneType.EARTH: Image.open(cfg.imagePath["earth"]).convert("RGBA"),
         StoneType.HEALTH: Image.open(cfg.imagePath["health"]).convert("RGBA")
     }
+    background = Image.open(cfg.imagePath["background"]).convert("RGBA")
+    for rowIdx in range(_board.numOfRows):
+        for colIdx in range(_board.numOfCols):
+            stone = _board.runestones[rowIdx][colIdx]
+            foreground = type2Foreground[stone.type]
+            location = (colIdx * pixels, rowIdx * pixels)
+            background.paste(foreground, location, foreground)
+    return background
+
+def visualizePath(_initBoard, _bestBoard, _finalMoveList):
+    # create directory
+    if os.path.exists(cfg.outputDir):
+        shutil.rmtree(cfg.outputDir)
+    os.makedirs(cfg.outputDir)
+    # setup image objects
+    hand = Image.open(cfg.imagePath["hand"]).convert("RGBA")
+    flag = Image.open(cfg.imagePath["flag"]).convert("RGBA")
     # init draw settings
     pixels = cfg.settings["pixels"]
     lineWidth = cfg.settings["lineWidth"]
     lineColor = cfg.settings["lineColor"]
-    # draw init board
-    background = Image.open(cfg.imagePath["background"]).convert("RGBA")
-    for rowIdx in range(_initBoard.numOfRows):
-        for colIdx in range(_initBoard.numOfCols):
-            stone = _initBoard.runestones[rowIdx][colIdx]
-            foreground = type2Foreground[stone.type]
-            location = (colIdx * pixels, rowIdx * pixels)
-            background.paste(foreground, location, foreground)
-    background.save( os.path.join(cfg.outputDir, "initBoard.png") )
+    # draw init and best board
+    drawBoard(_initBoard).save( os.path.join(cfg.outputDir, "initBoard.png") )
+    drawBoard(_bestBoard).save( os.path.join(cfg.outputDir, "bestBoard.png") )
     # draw path images
     board = _initBoard
-    path = Image.open( os.path.join(cfg.outputDir, "initBoard.png") ).convert("RGBA")
+    path = drawBoard(board)
     d = ImageDraw.Draw(path)
-    pathIdx, visited = 1, [board.previousPosition]
+    delta, pathIdx, visited = pixels // 2, 1, [board.previousPosition]
     for finalMoveIdx, finalMove in enumerate(_finalMoveList):
-        for successorIdx, successor in enumerate( board.getSuccessorList() ):
+        oldBoard = board
+        for successorIdx, successor in enumerate( oldBoard.getSuccessorList() ):
             (newBoard, move) = successor
             board = newBoard if finalMove == move else board
         if board.currentPosition in visited:
-            location = (visited[0][1] * pixels, visited[0][0] * pixels)
-            path.paste(hand, location, hand)
-            location = (board.previousPosition[1] * pixels, board.previousPosition[0] * pixels)
-            path.paste(flag, location, flag)
+            # draw start and end before saving
+            path.paste(hand, (visited[0][1] * pixels, visited[0][0] * pixels), hand)
+            path.paste(flag, (board.previousPosition[1] * pixels, board.previousPosition[0] * pixels), flag)
             path.save( os.path.join( cfg.outputDir, "path{:0>2d}.png".format(pathIdx) ) )
-            path = Image.open( os.path.join(cfg.outputDir, "initBoard.png") ).convert("RGBA")
+            # create new path image
+            path = drawBoard(oldBoard)
             d = ImageDraw.Draw(path)
             pathIdx, visited = pathIdx + 1, [board.previousPosition]
-        delta = pixels // 2
         src = (board.previousPosition[1] * pixels + delta, board.previousPosition[0] * pixels + delta)
         des = (board.currentPosition[1] * pixels + delta, board.currentPosition[0] * pixels + delta)
         d.line([src, des], fill = lineColor, width = lineWidth)
         visited.append(board.currentPosition)
-    location = (visited[0][1] * pixels, visited[0][0] * pixels)
-    path.paste(hand, location, hand)
-    location = (board.currentPosition[1] * pixels, board.currentPosition[0] * pixels)
-    path.paste(flag, location, flag)
+    path.paste(hand, (visited[0][1] * pixels, visited[0][0] * pixels), hand)
+    path.paste(flag, (board.currentPosition[1] * pixels, board.currentPosition[0] * pixels), flag)
     path.save( os.path.join( cfg.outputDir, "path{:0>2d}.png".format(pathIdx) ) )
-    # draw best board
-    background = Image.open(cfg.imagePath["background"]).convert("RGBA")
-    for rowIdx in range(_bestBoard.numOfRows):
-        for colIdx in range(_bestBoard.numOfCols):
-            stone = _bestBoard.runestones[rowIdx][colIdx]
-            foreground = type2Foreground[stone.type]
-            location = (colIdx * pixels, rowIdx * pixels)
-            background.paste(foreground, location, foreground)
-    background.save( os.path.join(cfg.outputDir, "bestBoard.png") )
 
