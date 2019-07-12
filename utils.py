@@ -4,6 +4,7 @@ import queue
 import os
 import shutil
 from PIL import Image, ImageDraw
+import imageio
 from basic import StoneType
 import config as cfg
 
@@ -108,7 +109,7 @@ def visualizePath(_initBoard, _bestBoard, _finalMoveList):
     drawBoard(_bestBoard).save( os.path.join(cfg.outputDir, "bestBoard.png") )
     # draw path images
     board = _initBoard
-    path = drawBoard(board)
+    path = drawBoard(_initBoard)
     d = ImageDraw.Draw(path)
     delta, pathIdx, visited = pixels // 2, 1, [board.previousPosition]
     for finalMoveIdx, finalMove in enumerate(_finalMoveList):
@@ -132,4 +133,10 @@ def visualizePath(_initBoard, _bestBoard, _finalMoveList):
     path.paste(hand, (visited[0][1] * pixels, visited[0][0] * pixels), hand)
     path.paste(flag, (board.currentPosition[1] * pixels, board.currentPosition[0] * pixels), flag)
     path.save( os.path.join( cfg.outputDir, "path{:0>2d}.png".format(pathIdx) ) )
+    # gif
+    images = [imageio.imread( os.path.join(cfg.outputDir, "initBoard.png") )]
+    for idx in range(1, pathIdx + 1):
+        images.append( imageio.imread( os.path.join( cfg.outputDir,  "path{:0>2d}.png".format(idx) ) ) )
+    images.append( imageio.imread( os.path.join(cfg.outputDir, "bestBoard.png") ) )
+    imageio.mimsave(os.path.join(cfg.outputDir,  "path.gif"), images, duration = 1.5)
 

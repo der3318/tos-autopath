@@ -7,6 +7,7 @@
 |語言|[Python v3.7](https://www.python.org/downloads/)|
 |:-:|:-:|
 |圖像處理模組|[PIL-Pillow v6.1.0](https://pillow.readthedocs.io/en/stable/)|
+|圖像讀寫模組|[imageio v2.5.0](https://imageio.github.io/)|
 
 
 ### 執行與測試
@@ -19,11 +20,11 @@
 #### 2. 執行程式 `$python3 search.py`
 |執行階段|執行完成|
 |:-:|:-:|
-|![Imgur](https://i.imgur.com/RDpWw1F.png)|![Imgur](https://i.imgur.com/O5OvL0Y.png)|
+|![Imgur](https://i.imgur.com/RDpWw1F.png)|![Imgur](https://i.imgur.com/B911Of7.png)|
 
 
 #### 3. 判讀輸出，路徑操作與版面評估已寫入 `output.txt`，另提供視覺化圖片
-|`initBoard.png`|`bestBoard.png`|`path[01-N].png`|
+|`initBoard.png`|`bestBoard.png`|`path[01-N].png` and `path.gif`|
 |:-:|:-:|:-:|
 |![Imgur](https://i.imgur.com/0vLT0uY.png)|![Imgur](https://i.imgur.com/VrYJUfg.png)|![Giphy](https://media.giphy.com/media/kbcIGuGzT4UoLIUirm/giphy.gif)|
 
