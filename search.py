@@ -9,7 +9,10 @@ initBoard = TosBoard()
 # init
 initBoard.randomInitialized()
 if cfg.inputFileName != None:
-    initBoard.initFromFile(cfg.inputFileName)
+    if cfg.inputFileName.endswith("txt"):
+        initBoard.initFromFile(cfg.inputFileName)
+    else:
+        initBoard.initFromScreenshot(cfg.inputFileName)
 # test evaluation
 stones, boundary, combo, end = initBoard.evaluate()
 # start searching

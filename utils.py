@@ -140,3 +140,49 @@ def visualizePath(_initBoard, _bestBoard, _finalMoveList):
     images.append( imageio.imread( os.path.join(cfg.outputDir, "bestBoard.png") ) )
     imageio.mimsave(os.path.join(cfg.outputDir,  "path.gif"), images, duration = 1.5)
 
+def screenshotToTypes(_filePath, _numOfRows, _numOfCols):
+    # load image and config
+    screen = Image.open(_filePath).convert("RGB")
+    pixels = cfg.settings["pixels"]
+    width = screen.size[0]
+    height = int(width * 1.5)
+    delta = (screen.size[1] - height) // 2
+    box = (0, screen.size[1] - delta - width // _numOfCols * _numOfRows, width, screen.size[1] - delta)
+    screen = screen.crop(box).resize( (pixels * _numOfCols, pixels * _numOfRows), Image.BILINEAR )
+    # init
+    types = list()
+    type2Value = {
+        StoneType.DARK: (118, 28, 138),
+        StoneType.LIGHT: (120, 89, 11),
+        StoneType.WATER: (44, 90, 136),
+        StoneType.FIRE: (153, 28, 15),
+        StoneType.EARTH: (27, 117, 31),
+        StoneType.HEALTH: (172, 74, 128)
+    }
+    type2Weight = {
+        StoneType.DARK: 1.0,
+        StoneType.LIGHT: 1.0,
+        StoneType.WATER: 1.0,
+        StoneType.FIRE: 1.0,
+        StoneType.EARTH: 1.0,
+        StoneType.HEALTH: 1.7
+    }
+    # parse
+    for rowIdx in range(_numOfRows):
+        types.append( list() )
+        for colIdx in range(_numOfCols):
+            types[rowIdx].append(None)
+            box = (colIdx * pixels, rowIdx * pixels, (colIdx + 1) * pixels, (rowIdx + 1) * pixels)
+            value = screen.crop(box).resize( (1, 1), Image.ANTIALIAS ).getpixel( (0, 0) )
+            minDist = 10e9
+            for t in type2Value:
+                v = type2Value[t]
+                dist = abs(value[0] - v[0]) + abs(value[1] - v[1]) + abs(value[2] - v[2])
+                dist = dist * type2Weight[t]
+                if dist >= minDist:
+                    continue
+                minDist = dist
+                types[rowIdx][colIdx] = t
+    # return types
+    return types
+

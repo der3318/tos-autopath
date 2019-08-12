@@ -1,7 +1,9 @@
 import random
 import copy
 import queue
+from PIL import Image
 from basic import Move, StoneType, Runestone
+import utils
 
 class TosBoard():
 
@@ -35,8 +37,8 @@ class TosBoard():
         self.previousPosition = self.currentPosition
         self.runestones[ self.currentPosition[0] ][ self.currentPosition[1] ].status = "*"
 
-    def initFromFile(self, _fileName):
-        with open(_fileName, "r") as fin:
+    def initFromFile(self, _filePath):
+        with open(_filePath, "r") as fin:
             for lineIdx, line in enumerate(fin):
                 tokenList = line.strip().split()
                 if len(tokenList) != 6:
@@ -50,6 +52,12 @@ class TosBoard():
                     if token == "E":    stone = Runestone(StoneType.EARTH)
                     if token == "H":    stone = Runestone(StoneType.HEALTH)
                     self.runestones[lineIdx][tokenIdx] = stone
+
+    def initFromScreenshot(self, _filePath):
+        types = utils.screenshotToTypes(_filePath, self.numOfRows, self.numOfCols)
+        for rowIdx in range(self.numOfRows):
+            for colIdx in range(self.numOfCols):
+                self.runestones[rowIdx][colIdx] = Runestone(types[rowIdx][colIdx])
 
     def setCurrentPosition(self, _pos):
         self.runestones[ self.currentPosition[0] ][ self.currentPosition[1] ].status = " "

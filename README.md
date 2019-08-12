@@ -11,10 +11,10 @@
 
 
 ### 執行與測試
-#### 1. 設定輸入與輸出，其中 D L W F E H 分別代表了暗、光、水、火、木及心浮石
-|`config.py`|`input.txt`|
-|:-:|:-:|
-|![Imgur](https://i.imgur.com/Eaxz8uO.png)|![Imgur](https://i.imgur.com/EW6dRiv.png)|
+#### 1. 設定輸入（文檔或螢幕截圖）與輸出，其中 D L W F E H 分別代表了暗、光、水、火、木及心浮石
+|`config.py`|`input.txt`|`input.jpg`|
+|:-:|:-:|:-:|
+|![Imgur](https://i.imgur.com/Eaxz8uO.png)|![Imgur](https://i.imgur.com/EW6dRiv.png)|![Imgur](https://i.imgur.com/ZU5Fhp5.jpg)|
 
 
 #### 2. 執行程式 `$python3 search.py`
